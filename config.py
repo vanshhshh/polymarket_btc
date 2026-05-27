@@ -40,11 +40,14 @@ class Settings:
     late_uncertainty_seconds: int = _int("LATE_UNCERTAINTY_SECONDS", 120)
     late_uncertainty_distance_bps: float = _float("LATE_UNCERTAINTY_DISTANCE_BPS", 2.0)
     min_entry_seconds_remaining: int = _int("MIN_ENTRY_SECONDS_REMAINING", 150)
+    min_directional_distance_bps: float = _float("MIN_DIRECTIONAL_DISTANCE_BPS", 5.0)
+    min_directional_confidence: float = _float("MIN_DIRECTIONAL_CONFIDENCE", 0.62)
     min_history_points: int = _int("MIN_HISTORY_POINTS", 20)
     poll_interval_seconds: int = _int("POLL_INTERVAL_SECONDS", 5)
 
     paper_trading: bool = _bool("PAPER_TRADING", True)
     enable_live_trading: bool = _bool("ENABLE_LIVE_TRADING", False)
+    signal_only_mode: bool = _bool("SIGNAL_ONLY_MODE", True)
 
     bankroll: float = _float("BANKROLL", 100.0)
     max_bet_fraction: float = _float("MAX_BET_FRACTION", 0.05)

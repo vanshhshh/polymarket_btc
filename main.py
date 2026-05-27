@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from config import settings
 from data.binance_rest import BinanceRestClient
 from data.binance_feed import BinanceLiveFeed
-from execution.edge import choose_trade
+from execution.edge import choose_trade, force_signal_only
 from execution.live import LiveExecutor
 from execution.paper import PaperExecutor
 from features.pipeline import FeaturePipeline
@@ -117,7 +117,11 @@ async def run() -> None:
                 settings.late_uncertainty_seconds,
                 settings.late_uncertainty_distance_bps,
                 settings.min_entry_seconds_remaining,
+                settings.min_directional_distance_bps,
+                settings.min_directional_confidence,
             )
+            if settings.signal_only_mode:
+                decision = force_signal_only(decision)
             decision = risk.approve(decision, market)
             if decision.side != "SKIP":
                 decision = await executor.execute(decision)

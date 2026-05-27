@@ -75,6 +75,8 @@ python tools/evaluate_paper_performance.py
 
 `PAPER_TRADING=true` and `ENABLE_LIVE_TRADING=false` are the defaults.
 
+`SIGNAL_ONLY_MODE=true` is also the default. In this mode the bot keeps watching markets and logging would-enter signals, but it does not record paper entries. Set `SIGNAL_ONLY_MODE=false` only after the replay/evaluation metrics are acceptable.
+
 `execution/live.py` intentionally raises until real order placement policy, credentials, jurisdiction, and token settlement rules are confirmed. This is the phase-3 scaffold, not a hidden live trader.
 
 ## Next Model Step

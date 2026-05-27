@@ -56,6 +56,8 @@ def main() -> None:
             settings.late_uncertainty_seconds,
             settings.late_uncertainty_distance_bps,
             settings.min_entry_seconds_remaining,
+            settings.min_directional_distance_bps,
+            settings.min_directional_confidence,
         )
         decision = risk.approve(decision, market)
         if decision.side == "SKIP":

@@ -335,6 +335,10 @@ def plain_reason(reason: str) -> str:
         "insufficient_top_liquidity": "Not enough visible liquidity at the entry price.",
         "zero_size": "Risk sizing produced no valid stake.",
         "no_executable_price": "No usable order-book price.",
+        "signal_only_would_buy_yes": "Signal-only mode: bot saw an UP setup but did not enter.",
+        "signal_only_would_buy_no": "Signal-only mode: bot saw a DOWN setup but did not enter.",
+        "yes_not_directional_enough": "Skipped UP because price/confidence were not strong enough.",
+        "no_not_directional_enough": "Skipped DOWN because price/confidence were not strong enough.",
     }
     return mapping.get(clean, clean.replace("_", " ").capitalize())
 

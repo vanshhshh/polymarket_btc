@@ -3,6 +3,22 @@ from __future__ import annotations
 from data.schemas import Decision, FeatureSnapshot, MarketSnapshot
 
 
+def force_signal_only(decision: Decision) -> Decision:
+    if decision.side == "SKIP":
+        return decision
+    return Decision(
+        timestamp=decision.timestamp,
+        market_slug=decision.market_slug,
+        side="SKIP",
+        model_prob_up=decision.model_prob_up,
+        executable_price=decision.executable_price,
+        edge=decision.edge,
+        size=0.0,
+        reason=f"signal_only_would_buy_{decision.side.lower()}",
+        features=decision.features,
+    )
+
+
 def choose_trade(
     feature_snapshot: FeatureSnapshot,
     market: MarketSnapshot,
@@ -18,6 +34,8 @@ def choose_trade(
     late_uncertainty_seconds: int = 120,
     late_uncertainty_distance_bps: float = 2.0,
     min_entry_seconds_remaining: int = 150,
+    min_directional_distance_bps: float = 5.0,
+    min_directional_confidence: float = 0.62,
 ) -> Decision:
     yes_ask = market.yes.ask_price
     no_ask = market.no.ask_price
@@ -44,6 +62,8 @@ def choose_trade(
     if yes_edge >= no_edge and yes_edge > edge_threshold:
         if yes_ask is None or yes_ask < min_executable_price or yes_ask > max_executable_price:
             return _skip(feature_snapshot, market, model_prob_up, "yes_price_out_of_bounds")
+        if distance_bps < min_directional_distance_bps or model_prob_up < min_directional_confidence:
+            return _skip(feature_snapshot, market, model_prob_up, "yes_not_directional_enough")
         if distance_bps < -max_contrarian_distance_bps and model_prob_up < 1.0 - contrarian_confidence:
             return _skip(feature_snapshot, market, model_prob_up, "yes_contrarian_without_confidence")
         return Decision(
@@ -60,6 +80,8 @@ def choose_trade(
     if no_edge > edge_threshold:
         if no_ask is None or no_ask < min_executable_price or no_ask > max_executable_price:
             return _skip(feature_snapshot, market, model_prob_up, "no_price_out_of_bounds")
+        if distance_bps > -min_directional_distance_bps or (1.0 - model_prob_up) < min_directional_confidence:
+            return _skip(feature_snapshot, market, model_prob_up, "no_not_directional_enough")
         if distance_bps > max_contrarian_distance_bps and model_prob_up > contrarian_confidence:
             return _skip(feature_snapshot, market, model_prob_up, "no_contrarian_without_confidence")
         return Decision(
